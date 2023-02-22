@@ -71,6 +71,10 @@
   #define MOTHERBOARD BOARD_MKS_SGEN_L_V2
 #endif
 
+//da: suppress compile warnings
+#define DIAG_JUMPERS_REMOVED
+#define NO_AUTO_ASSIGN_WARNING
+
 /**
  * Select the serial port on the board to use for communication with the host.
  * This allows the connection of wireless adapters (for instance) to non-default port pins.
