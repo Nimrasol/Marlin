@@ -657,6 +657,7 @@
 #define HEATER_1_MAXTEMP 275
 #define HEATER_2_MAXTEMP 275
 #define HEATER_3_MAXTEMP 275
+#define HEATER_3_MAXTEMP 275
 #define HEATER_4_MAXTEMP 275
 #define HEATER_5_MAXTEMP 275
 #define HEATER_6_MAXTEMP 275
@@ -1192,9 +1193,9 @@
  * Endstop "Hit" State
  * Set to the state (HIGH or LOW) that applies to each endstop.
  */
-#define X_MIN_ENDSTOP_HIT_STATE LOW  // da: default HIGH
-#define X_MAX_ENDSTOP_HIT_STATE HIGH
-#define Y_MIN_ENDSTOP_HIT_STATE LOW  // da: default HIGH
+#define X_MIN_ENDSTOP_HIT_STATE LOW //da: BLTouch (default: HIGH)
+#define X_MAX_ENDSTOP_HIT_STATE HIGH 
+#define Y_MIN_ENDSTOP_HIT_STATE LOW //da: BLTouch (default: HIGH)
 #define Y_MAX_ENDSTOP_HIT_STATE HIGH
 #define Z_MIN_ENDSTOP_HIT_STATE HIGH
 #define Z_MAX_ENDSTOP_HIT_STATE HIGH
