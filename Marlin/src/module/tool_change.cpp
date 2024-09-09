@@ -22,6 +22,8 @@
 
 #include "../inc/MarlinConfigPre.h"
 
+#if HAS_TOOLCHANGE
+
 #include "tool_change.h"
 
 #include "motion.h"
@@ -74,10 +76,12 @@
   #include "../feature/fanmux.h"
 #endif
 
-#if HAS_PRUSA_MMU1
-  #include "../feature/mmu/mmu.h"
+#if HAS_PRUSA_MMU3
+  #include "../feature/mmu3/mmu2.h"
 #elif HAS_PRUSA_MMU2
   #include "../feature/mmu/mmu2.h"
+#elif HAS_PRUSA_MMU1
+  #include "../feature/mmu/mmu.h"
 #endif
 
 #if HAS_MARLINUI_MENU
@@ -1028,7 +1032,7 @@ void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_axis, 0.
     if (!too_cold(active_extruder)) {
       destination = current_position; // Remember the old position
 
-      const bool ok = TERN1(TOOLCHANGE_PARK, all_axes_homed() && toolchange_settings.enable_park);
+      const bool ok = TERN0(TOOLCHANGE_PARK, all_axes_homed() && toolchange_settings.enable_park);
 
       #if HAS_FAN && TOOLCHANGE_FS_FAN >= 0
         // Store and stop fan. Restored on any exit.
@@ -1080,7 +1084,20 @@ void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_axis, 0.
         }
       #endif
 
+      // Clone previous position
       extruder_cutting_recover(destination.e); // Cutting recover
+
+      // Retract if previously retracted
+      #if ENABLED(FWRETRACT)
+        if (fwretract.retracted[active_extruder])
+          unscaled_e_move(-fwretract.settings.retract_length, fwretract.settings.retract_feedrate_mm_s);
+      #endif
+
+      // If resume_position is negative
+      if (current_position.e < 0) unscaled_e_move(current_position.e, MMM_TO_MMS(toolchange_settings.retract_speed));
+
+      planner.synchronize();
+      planner.set_e_position_mm(current_position.e); // Extruder primed and ready
     }
   }
 
@@ -1106,6 +1123,12 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
       // T0-Tnnn: Switch virtual tool by changing the index to the mix
       mixer.T(new_tool);
     #endif
+
+  #elif HAS_PRUSA_MMU3
+
+    UNUSED(no_move);
+
+    mmu3.tool_change(new_tool);
 
   #elif HAS_PRUSA_MMU2
 
@@ -1597,6 +1620,9 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
         unscaled_e_move(-fwretract.settings.retract_length, fwretract.settings.retract_feedrate_mm_s);
     #endif
 
+    // If resume_position is negative
+    if (resume_current_e < 0) unscaled_e_move(resume_current_e, MMM_TO_MMS(toolchange_settings.retract_speed));
+
     // If no available extruder
     if (EXTRUDERS < 2 || active_extruder >= EXTRUDERS - 2 || active_extruder == migration.last)
       migration.automode = false;
@@ -1613,3 +1639,5 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
   }
 
 #endif // TOOLCHANGE_MIGRATION_FEATURE
+
+#endif // HAS_TOOLCHANGE
