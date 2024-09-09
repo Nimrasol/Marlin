@@ -702,13 +702,13 @@
   #if ENABLED(PID_PARAMS_PER_HOTEND)
     // Specify up to one value per hotend here, according to your setup.
     // If there are fewer values, the last one applies to the remaining hotends.
-    #define DEFAULT_Kp_LIST {  22.20,  22.20 }
-    #define DEFAULT_Ki_LIST {   1.08,   1.08 }
-    #define DEFAULT_Kd_LIST { 114.00, 114.00 }
+    #define DEFAULT_Kp_LIST {  28.66,  28.66 }
+    #define DEFAULT_Ki_LIST {   5.62,   5.62 }
+    #define DEFAULT_Kd_LIST { 36.55, 36.55 }
   #else
-    #define DEFAULT_Kp 20.32
-    #define DEFAULT_Ki  4.00
-    #define DEFAULT_Kd 25.80
+    #define DEFAULT_Kp 28.66 //da: update 09.09.2024, E3D Hemera Revo
+    #define DEFAULT_Ki  5.62
+    #define DEFAULT_Kd 36.55
   #endif
 #else
   #define BANG_MAX 255    // Limit hotend current while in bang-bang mode; 255=full current
